@@ -1,5 +1,6 @@
 
 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { RESOURCES } from '../constants';
@@ -14,7 +15,7 @@ const ResourcePage: React.FC = () => {
   const [summary, setSummary] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
-  const { stories, currentUser, loading: authLoading, comments, likes, reports, addComment, toggleLike, reportContent } = useAuth();
+  const { stories, currentUser, loading: authLoading, comments, likes, reports, addComment, toggleLike, reportContent, bookmarks, toggleBookmark } = useAuth();
   const [newComment, setNewComment] = useState('');
 
   const allResources = useMemo(() => {
@@ -113,6 +114,7 @@ const ResourcePage: React.FC = () => {
   const canSummarize = resource.status === 'published' && resource.content.trim() !== '';
   const resourceLikes = likes[resource.id] || [];
   const hasLiked = currentUser ? resourceLikes.includes(currentUser.uid) : false;
+  const isBookmarked = currentUser ? bookmarks.includes(resource.id) : false;
 
   return (
     <div className="bg-white dark:bg-slate-800 p-6 sm:p-8 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700">
@@ -147,6 +149,27 @@ const ResourcePage: React.FC = () => {
                     <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
                   </svg>
                 <span>{hasLiked ? 'Liked' : 'Like'}</span>
+            </button>
+             <button
+                onClick={() => toggleBookmark(resource.id)}
+                disabled={!currentUser}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm transition-colors duration-200 ${
+                    isBookmarked
+                    ? 'bg-brand-blue text-white'
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                } disabled:cursor-not-allowed disabled:opacity-60`}
+                aria-label={isBookmarked ? 'Remove from Bookmarks' : 'Add to Bookmarks'}
+            >
+                {isBookmarked ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-3.13L5 18V4z" />
+                    </svg>
+                ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                )}
+                <span>{isBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
             </button>
             <span className="text-slate-500 dark:text-slate-400 font-medium">{resourceLikes.length} {resourceLikes.length === 1 ? 'Like' : 'Likes'}</span>
             <button

@@ -13,6 +13,7 @@ Welcome to Living Library 2.0, an AI-powered web application for exploring, summ
 - **Automatic Content Processing**: The backend uses the Gemini API to automatically extract text from documents, transcribe audio files, and generate relevant tags.
 - **User Profiles**: Users can manage their profile information, view their submitted stories, and track their recent activity.
 - **Community Engagement**: Like your favorite resources and join the discussion by posting comments.
+- **Bookmarking**: Save interesting resources to a personal list for easy access later from your profile.
 - **Responsive Design**: A clean, modern, and fully responsive UI that works on all devices.
 - **Theming**: Switch between Light, Dark, and System themes for optimal viewing comfort.
 
@@ -30,7 +31,7 @@ Welcome to Living Library 2.0, an AI-powered web application for exploring, summ
 - **Authentication**:
   - Firebase Authentication for secure user sign-up and login.
 - **Data Persistence**:
-  - User-generated content (stories, profile info) and community data (comments, likes) are persisted locally using the browser's `localStorage`.
+  - User-generated content (stories, profile info) and community data (comments, likes, bookmarks) are persisted locally using the browser's `localStorage`.
 
 ---
 
@@ -85,6 +86,11 @@ The frontend is designed to run directly from the `index.html` file using modern
 ## 📝 Change Log
 
 A log of recent changes and improvements to the application.
+
+### `2024-07-28`
+- **Feature**: Added a 'Bookmark' feature for authenticated users.
+- **Behavior Before**: Users could not save resources for later viewing.
+- **Behavior After**: Logged-in users can now bookmark resources via an icon on resource cards and a button on detail pages. A "My Bookmarks" section has been added to the profile page to display all saved items.
 
 ### `2024-07-27`
 - **Feature**: The welcome modal now appears every time for non-logged-in users.

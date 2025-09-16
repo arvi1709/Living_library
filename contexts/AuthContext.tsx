@@ -1,6 +1,7 @@
 
 
 
+
 import React, { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
 // FIX: Import modular Firebase auth functions directly.
 import {
@@ -22,6 +23,7 @@ interface AuthContextType {
   comments: Comment[];
   likes: Record<string, string[]>;
   reports: Report[];
+  bookmarks: string[];
   login: (email:string, pass: string) => Promise<any>;
   logout: () => Promise<void>;
   signup: (email:string, pass: string) => Promise<any>;
@@ -31,6 +33,7 @@ interface AuthContextType {
   toggleLike: (resourceId: string) => void;
   reportContent: (resourceId: string, resourceTitle: string) => void;
   updateUserProfile: (name: string, imageFile: File | null) => Promise<void>;
+  toggleBookmark: (resourceId: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,6 +45,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [comments, setComments] = useState<Comment[]>([]);
   const [likes, setLikes] = useState<Record<string, string[]>>({});
   const [reports, setReports] = useState<Report[]>([]);
+  const [bookmarks, setBookmarks] = useState<string[]>([]);
 
   useEffect(() => {
     // FIX: Use onAuthStateChanged directly.
@@ -80,9 +84,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         } else {
             setStories([]);
         }
+        
+        // Load user's bookmarks from localStorage
+        const storedBookmarks = localStorage.getItem(`bookmarks_${user.uid}`);
+        if (storedBookmarks) {
+            try {
+                setBookmarks(JSON.parse(storedBookmarks));
+            } catch (e) {
+                console.error("Failed to parse bookmarks from localStorage", e);
+                setBookmarks([]);
+            }
+        } else {
+            setBookmarks([]);
+        }
+
       } else {
         setCurrentUser(null);
         setStories([]); // Clear stories when user logs out
+        setBookmarks([]); // Clear bookmarks when user logs out
       }
       setLoading(false);
     });
@@ -124,6 +143,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     }
   }, [stories, currentUser, loading]);
+  
+  // Persist user-specific bookmarks to localStorage whenever they change
+  useEffect(() => {
+    if (currentUser && !loading) {
+      try {
+        localStorage.setItem(`bookmarks_${currentUser.uid}`, JSON.stringify(bookmarks));
+      } catch (error) {
+        console.error("Could not save bookmarks to localStorage:", error);
+      }
+    }
+  }, [bookmarks, currentUser, loading]);
 
 
   const login = (email: string, password: string) => {
@@ -135,8 +165,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (currentUser) {
       // Clear localStorage for the user on logout.
       localStorage.removeItem(`stories_${currentUser.uid}`);
+      localStorage.removeItem(`bookmarks_${currentUser.uid}`);
     }
     setStories([]); // Clear stories from state immediately
+    setBookmarks([]); // Clear bookmarks from state immediately
     // FIX: Use signOut directly.
     return signOut(auth);
   };
@@ -239,6 +271,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   }, [currentUser]);
 
+  const toggleBookmark = useCallback((resourceId: string) => {
+    if (!currentUser) {
+        console.error("User must be logged in to bookmark.");
+        return;
+    }
+    setBookmarks(prev => {
+        const isBookmarked = prev.includes(resourceId);
+        return isBookmarked
+            ? prev.filter(id => id !== resourceId)
+            : [...prev, resourceId];
+    });
+  }, [currentUser]);
+
   const reportContent = useCallback((resourceId: string, resourceTitle: string) => {
     if (!currentUser) {
       console.error("User must be logged in to report content.");
@@ -297,6 +342,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     comments,
     likes,
     reports,
+    bookmarks,
     login,
     logout,
     signup,
@@ -306,6 +352,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     toggleLike,
     reportContent,
     updateUserProfile,
+    toggleBookmark,
   };
 
   return (

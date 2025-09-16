@@ -1,5 +1,6 @@
 
 
+
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import type { Resource } from '../types';
@@ -11,13 +12,18 @@ interface ResourceCardProps {
 }
 
 const ResourceCard: React.FC<ResourceCardProps> = ({ resource, likesCount = 0 }) => {
-  const { currentUser, reportContent, reports } = useAuth();
+  const { currentUser, reportContent, reports, bookmarks, toggleBookmark } = useAuth();
   const isPendingReview = resource.status === 'pending_review';
 
   const isReported = useMemo(() => {
     if (!currentUser) return false;
     return reports.some(r => r.resourceId === resource.id && r.reporterId === currentUser.uid);
   }, [reports, currentUser, resource.id]);
+
+  const isBookmarked = useMemo(() => {
+    if (!currentUser) return false;
+    return bookmarks.includes(resource.id);
+  }, [bookmarks, currentUser, resource.id]);
 
   const handleReportClick = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigating to resource page
@@ -36,9 +42,39 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, likesCount = 0 })
       alert("Content reported. Thank you for your feedback.");
     }
   };
+  
+  const handleBookmarkClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!currentUser) {
+      alert("Please log in to bookmark content.");
+      return;
+    }
+    toggleBookmark(resource.id);
+  };
+
 
   return (
     <div className="relative bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-slate-200 dark:border-slate-700 flex flex-col hover:-translate-y-1">
+      {currentUser && (
+        <button
+          onClick={handleBookmarkClick}
+          className="absolute top-4 left-4 p-2 rounded-full bg-white/50 dark:bg-slate-900/50 hover:bg-brand-blue/20 text-slate-500 dark:text-slate-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors z-10"
+          title={isBookmarked ? "Remove from Bookmarks" : "Add to Bookmarks"}
+          aria-label={isBookmarked ? "Remove from Bookmarks" : "Add to Bookmarks"}
+        >
+          {isBookmarked ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-brand-blue" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-3.13L5 18V4z" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+          )}
+        </button>
+      )}
+
       {currentUser && !isPendingReview && resource.status === 'published' && (
         <button
           onClick={handleReportClick}
