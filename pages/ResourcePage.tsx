@@ -1,6 +1,7 @@
 
 
 
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { RESOURCES } from '../constants';
@@ -124,7 +125,7 @@ const ResourcePage: React.FC = () => {
         </span>
         <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100 mb-2">{resource.title}</h1>
         {resource.authorName && <p className="text-lg text-slate-600 dark:text-slate-300 mb-4">By {resource.authorName}</p>}
-        <img src={resource.imageUrl} alt={resource.title} className="w-full h-64 object-cover rounded-lg mb-6 shadow-md"/>
+        <img src={resource.imageUrl} alt={resource.title} className="w-full h-64 object-cover rounded-lg mb-6 shadow-md" loading="lazy" decoding="async"/>
         
         {resource.tags && resource.tags.length > 0 && (
           <div className="mb-6 flex flex-wrap gap-2">
@@ -255,7 +256,7 @@ const ResourcePage: React.FC = () => {
             <div className="space-y-6">
                 {comments.filter(c => c.resourceId === resource.id).sort((a, b) => b.timestamp - a.timestamp).map(comment => (
                       <div key={comment.id} className="flex items-start space-x-4 animate-fade-in">
-                        <img src={comment.authorImageUrl} alt={comment.authorName} className="h-10 w-10 rounded-full object-cover"/>
+                        <img src={comment.authorImageUrl} alt={comment.authorName} className="h-10 w-10 rounded-full object-cover" loading="lazy" decoding="async" />
                         <div className="min-w-0 flex-1">
                             <div className="text-sm">
                                 <span className="font-bold text-slate-800 dark:text-slate-200">{comment.authorName}</span>

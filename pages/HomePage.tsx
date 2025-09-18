@@ -86,6 +86,8 @@ const HomePage: React.FC = () => {
                     className="w-28 h-28 rounded-full object-cover shadow-lg border-4 border-white dark:border-slate-800 group-hover:border-brand-orange transition-all duration-300"
                     src={author.imageUrl}
                     alt={author.name}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 <h3 className="mt-4 text-lg font-semibold text-slate-700 dark:text-slate-300 group-hover:text-brand-orange transition-colors">{author.name}</h3>

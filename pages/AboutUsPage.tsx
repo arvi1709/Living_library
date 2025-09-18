@@ -4,7 +4,7 @@ import type { TeamMember } from '../types';
 
 const MemberCard: React.FC<{ member: TeamMember }> = ({ member }) => (
   <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-    <img className="w-32 h-32 rounded-full mx-auto mb-4 object-cover" src={member.imageUrl} alt={member.name} />
+    <img className="w-32 h-32 rounded-full mx-auto mb-4 object-cover" src={member.imageUrl} alt={member.name} loading="lazy" decoding="async" />
     <h3 className="text-xl font-bold text-brand-blue">{member.name}</h3>
     <p className="text-brand-orange font-semibold mb-2">{member.role}</p>
     <p className="text-slate-600 dark:text-slate-300 text-sm">{member.bio}</p>

@@ -1,6 +1,7 @@
 
 
 
+
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import type { Resource } from '../types';
@@ -88,7 +89,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, likesCount = 0 })
           </svg>
         </button>
       )}
-      <img className="h-48 w-full object-cover" src={resource.imageUrl} alt={resource.title} />
+      <img className="h-48 w-full object-cover" src={resource.imageUrl} alt={resource.title} loading="lazy" decoding="async" />
       <div className="p-6 flex flex-col flex-grow">
         <div>
           <div className="flex justify-between items-center text-sm">
